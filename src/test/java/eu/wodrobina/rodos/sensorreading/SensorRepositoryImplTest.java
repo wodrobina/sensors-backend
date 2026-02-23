@@ -17,7 +17,7 @@ class SensorRepositoryImplTest {
     SensorReading sensorReading;
 
     @Test
-    void should_save_sensor_reading() {
+    void should_save_new_sensor_reading() {
         givenNewSensorReading();
 
         assertThat(sensorRepository.save(sensorReading))
@@ -26,23 +26,13 @@ class SensorRepositoryImplTest {
     }
 
     @Test
-    void should_find_sensor_reading() {
-        givenExistingSensorReading();
-
-        assertThat(sensorRepository.findById(sensorReading.id()))
-                .isPresent()
-                .get()
-                .isEqualTo(sensorReading);
-    }
-
-    @Test
-    void should_find_all_sensor_readings() {
+    void should_find_sensor_readings_by_sensor_name() {
         givenExistingSensorReading(25);
-        givenExistingSensorReading(24);
-        givenExistingSensorReading(20);
+        givenExistingSensorReading("differentSensor", 20);
+        givenExistingSensorReading("differentSensor", 21);
 
-        assertThat(sensorRepository.findAll())
-                .hasSize(3);
+        assertThat(sensorRepository.findAllBySensorName("differentSensor"))
+                .allMatch(sr -> sr.sensorName().equals("differentSensor"));
     }
 
     private void givenNewSensorReading() {
@@ -54,6 +44,10 @@ class SensorRepositoryImplTest {
     }
 
     private void givenExistingSensorReading(double reading) {
-        sensorReading = sensorRepository.save(SensorReading.of("exampleSensor", reading, SensorUnit.CELSIUS));
+        givenExistingSensorReading("exampleSensor", reading);
+    }
+
+    private void givenExistingSensorReading(String sensorName, double reading) {
+        sensorReading = sensorRepository.save(SensorReading.of(sensorName, reading, SensorUnit.CELSIUS));
     }
 }

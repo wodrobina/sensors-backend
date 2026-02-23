@@ -1,13 +1,13 @@
 package eu.wodrobina.rodos.sensorreading;
 
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
-public interface SensorRepository {
+interface SensorRepository {
 
-    List<SensorReading> findAll();
+    List<SensorReading> findAllBySensorName(String sensorName);
 
-    Optional<SensorReading> findById(long id);
+    List<SensorReading> findAllBySensorName(String sensorName, Instant from, Instant to);
 
     SensorReading save(SensorReading dto);
 }
