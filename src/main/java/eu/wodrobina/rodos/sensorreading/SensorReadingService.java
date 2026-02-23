@@ -14,13 +14,13 @@ public class SensorReadingService {
     public SensorReadingService(SensorRepository sensorRepository) {
         this.sensorRepository = sensorRepository;
     }
+
     public Collection<SensorReadingResource> findAllByName(String sensorName) {
         List<SensorReading> allBySensorName = sensorRepository.findAllBySensorName(sensorName);
         return allBySensorName.stream()
                 .map(SensorReading::asResource)
                 .toList();
     }
-
 
     public SensorReadingResource save(SensorReading sensorReading) {
         return sensorRepository.save(sensorReading).asResource();

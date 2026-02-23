@@ -4,7 +4,9 @@ package eu.wodrobina.rodos.sensorreading.api;
 import eu.wodrobina.rodos.sensorreading.SensorReading;
 import eu.wodrobina.rodos.sensorreading.SensorReadingService;
 import eu.wodrobina.rodos.sensorreading.SensorUnit;
+import eu.wodrobina.rodos.sensorreading.TruncateTablesExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -24,6 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc
 class SensorReadingControllerWebMvcTest {
+
+    @Autowired
+    @RegisterExtension
+    TruncateTablesExtension truncateTablesExtension;
 
     @Autowired
     MockMvc mockMvc;

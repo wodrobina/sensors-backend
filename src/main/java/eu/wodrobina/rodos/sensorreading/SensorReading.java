@@ -18,24 +18,24 @@ public class SensorReading {
     private String unit;
     private Instant createdAt;
 
-    SensorReading(Long id, String sensorName, BigDecimal reading, String unit) {
+    SensorReading(Long id, String sensorName, BigDecimal reading, String unit, Instant createdAt) {
         this.id = id;
         this.sensorName = sensorName;
         this.reading = reading.setScale(2, RoundingMode.HALF_UP);
         this.unit = unit;
-        this.createdAt = Instant.now();
+        this.createdAt = createdAt;
     }
 
     public static SensorReading of(String sensorName,
                                    BigDecimal reading,
                                    SensorUnit sensorUnit) {
-        return new SensorReading(null, sensorName, reading, sensorUnit.getUnit());
+        return new SensorReading(null, sensorName, reading, sensorUnit.getUnit(), Instant.now());
     }
 
     public static SensorReading of(String sensorName,
                                    double reading,
                                    SensorUnit sensorUnit) {
-        return new SensorReading(null, sensorName, BigDecimal.valueOf(reading), sensorUnit.getUnit());
+        return new SensorReading(null, sensorName, BigDecimal.valueOf(reading), sensorUnit.getUnit(), Instant.now());
     }
 
     public Long id() {
