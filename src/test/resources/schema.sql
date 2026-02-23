@@ -9,3 +9,8 @@ CREATE TABLE IF NOT EXISTS sensor_reading
     unit        VARCHAR(32)    NOT NULL,
     created_at  TIMESTAMP      NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS sensor (
+    id UUID PRIMARY KEY,
+    public_key TEXT NOT NULL
+);

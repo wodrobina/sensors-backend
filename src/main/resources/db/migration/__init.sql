@@ -11,3 +11,12 @@ create table rod.sensor_reading
 
 create index idx_sensor_reading_sensor_name
     on rod.sensor_reading (sensor_name);
+
+CREATE TABLE sensor (
+    id UUID PRIMARY KEY,
+    sensor_name VARCHAR(255) UNIQUE NOT NULL,
+    sensor_comment TEXT,
+    public_key TEXT NOT NULL
+);
+
+CREATE INDEX sensor_public_key_idx ON sensor(public_key);
