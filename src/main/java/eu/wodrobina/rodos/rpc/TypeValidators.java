@@ -1,4 +1,4 @@
-package eu.wodrobina.rodos.sensorreading.api;
+package eu.wodrobina.rodos.rpc;
 
 import eu.wodrobina.rodos.sensorreading.SensorUnit;
 import org.springframework.util.StringUtils;
@@ -6,8 +6,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
-
-import static eu.wodrobina.rodos.sensorreading.api.SensorReadingController.*;
 
 public class TypeValidators {
 
