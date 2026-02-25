@@ -21,7 +21,7 @@ public class SensorService {
         if (byPublicKey.isPresent()) {
             throw new IllegalArgumentException("Sensor with public key already exist.");
         }
-        Sensor sensor = sensorRepository.insert(Sensor.newSensor(registerSensorRequest.sensorName(),
+        Sensor sensor = sensorRepository.save(Sensor.newSensor(registerSensorRequest.sensorName(),
                 registerSensorRequest.sensorComment(),
                 registerSensorRequest.publicKey()));
 

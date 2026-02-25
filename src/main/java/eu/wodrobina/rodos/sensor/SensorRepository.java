@@ -20,15 +20,14 @@ class SensorRepository {
     private static final String TABLE = "sensor";
 
     public static final String FIND_BY_ID = "SELECT id, sensor_name, sensor_comment, public_key FROM " + TABLE + " WHERE id = ?";
-    public static final String FIND_BY_PUBLIC_KEY = "SELECT id, sensor_name, sensor_comment, public_key FROM " + TABLE + "WHERE public_key = ?";
-    ;
-    public static final String INSERT = "INSERT INTO " + TABLE + " (id, sensor_name, sensor_comment, public_key) VALUES (?, ?, ?, ?)";
+    public static final String FIND_BY_PUBLIC_KEY = "SELECT id, sensor_name, sensor_comment, public_key FROM " + TABLE + " WHERE public_key = ?";
+    public static final String INSERT = "INSERT INTO " + TABLE + " ( sensor_name, sensor_comment, public_key) VALUES ( ?, ?, ?)";
 
     public SensorRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Sensor insert(Sensor dto) {
+    public Sensor save(Sensor dto) {
         if (dto == null) {
             throw new IllegalArgumentException("dto is null");
         }
@@ -42,7 +41,7 @@ class SensorRepository {
             PreparedStatement ps = con.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, dto.getSensorName());
             ps.setString(2, dto.getSensorComment());
-            ps.setString(3, dto.getSensorComment());
+            ps.setString(3, dto.getPublicKey());
             return ps;
         }, keyHolder);
 
@@ -68,6 +67,5 @@ class SensorRepository {
             rs.getString("sensor_comment"),
             rs.getString("public_key")
     );
-
 
 }
