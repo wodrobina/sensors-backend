@@ -12,7 +12,7 @@ public class TypeValidators {
     private TypeValidators() {
     }
 
-    static String requireString(Map<String, Object> params, String key) {
+    public static String requireString(Map<String, Object> params, String key) {
         if (params == null) {
             throw new JsonRpcException(JsonRpcError.invalidParams("params is required"));
         }
@@ -23,7 +23,7 @@ public class TypeValidators {
         return s;
     }
 
-    static BigDecimal requireDecimal(Map<String, Object> params, String key) {
+    public static BigDecimal requireDecimal(Map<String, Object> params, String key) {
         if (params == null) {
             throw new JsonRpcException(JsonRpcError.invalidParams("params is required"));
         }
@@ -46,7 +46,7 @@ public class TypeValidators {
         throw new JsonRpcException(JsonRpcError.invalidParams("'" + key + "' must be a decimal number"));
     }
 
-    static SensorUnit requireUnit(Map<String, Object> params, String key) {
+    public static SensorUnit requireUnit(Map<String, Object> params, String key) {
         if (params == null) {
             throw new JsonRpcException(JsonRpcError.invalidParams("params is required"));
         }

@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS sensor_reading
 );
 
 CREATE TABLE IF NOT EXISTS sensor (
-    id UUID PRIMARY KEY,
+    id UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
+    sensor_name VARCHAR(255) UNIQUE NOT NULL,
+    sensor_comment TEXT,
     public_key TEXT NOT NULL
-);
+    );

@@ -1,5 +1,7 @@
 package eu.wodrobina.rodos.rpc;
 
+import eu.wodrobina.rodos.sensor.SensorService;
+import eu.wodrobina.rodos.sensor.api.RegisterSensorRequest;
 import eu.wodrobina.rodos.sensorreading.SensorReading;
 import eu.wodrobina.rodos.sensorreading.SensorReadingService;
 import eu.wodrobina.rodos.sensorreading.SensorUnit;
@@ -13,12 +15,14 @@ import static eu.wodrobina.rodos.rpc.TypeValidators.requireString;
 import static eu.wodrobina.rodos.rpc.TypeValidators.requireUnit;
 
 @Service
-public class DispatchService {
+class DispatchService {
 
     private final SensorReadingService sensorReadingService;
+    private final SensorService sensorService;
 
-    public DispatchService(SensorReadingService sensorReadingService) {
+    public DispatchService(SensorReadingService sensorReadingService, SensorService sensorService) {
         this.sensorReadingService = sensorReadingService;
+        this.sensorService = sensorService;
     }
 
     public Object dispatch(String method, Map<String, Object> params) {
@@ -33,6 +37,9 @@ public class DispatchService {
 
                 yield sensorReadingService.save(SensorReading.of(sensorName, reading, unit));
             }
+
+            case "sensor.register" ->
+                    sensorService.registerSensor(RegisterSensorRequest.fromRequestParams(params));
 
             default ->
                     throw new JsonRpcException(JsonRpcError.methodNotFound("Unknown method: " + method));
