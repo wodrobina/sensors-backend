@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,14 +38,15 @@ class SensorControllerWebMvcTest {
 
     String requestJson;
 
+    ResultActions resultActions;
+
     @Test
     void should_register_new_sensor() throws Exception {
         givenSensorRegisterRequest("mySensor", null, TestUtils.generateTestPublicKeyBase64());
 
-        mockMvc.perform(post("/rpc")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status()
+        whenRequestIsPerformed();
+
+        resultActions.andExpect(status()
                         .isOk())
                 .andExpect(content()
                         .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -57,6 +59,23 @@ class SensorControllerWebMvcTest {
                 .andExpect(jsonPath("$.result.sensorName").value("mySensor"))
                 .andExpect(jsonPath("$.result.sensorComment").value("null"))
                 .andExpect(jsonPath("$.result.publicKey").exists());
+    }
+
+    @Test
+    void should_fail_to_register_multiple_times() throws Exception {
+        final String publicKeyBase64 = TestUtils.generateTestPublicKeyBase64();
+        givenRegisteredSensor(publicKeyBase64);
+        givenSensorRegisterRequest("otherSensor", null, publicKeyBase64);
+
+        whenRequestIsPerformed();
+
+        thenRequestIsOkWithError();
+    }
+
+    private void whenRequestIsPerformed() throws Exception {
+        resultActions = mockMvc.perform(post("/rpc")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson));
     }
 
     private void givenSensorRegisterRequest(String sensorName, String sensorComment, String sensorPublicKey) {
@@ -74,6 +93,21 @@ class SensorControllerWebMvcTest {
                         }
                         """, sensorName, sensorComment, sensorPublicKey
         );
+    }
+
+    private void givenRegisteredSensor(String publicKeyBase64) throws Exception {
+        givenSensorRegisterRequest("mySensor", null, publicKeyBase64);
+        whenRequestIsPerformed();
+    }
+
+    private void thenRequestIsOkWithError() throws Exception {
+        resultActions.andExpect(status()
+                        .isOk())
+                .andExpect(content()
+                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.jsonrpc").value("2.0"))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.error").exists());
     }
 
     private static @NonNull Matcher<String> isUUID() {

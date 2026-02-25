@@ -1,49 +1,55 @@
 package eu.wodrobina.rodos.sensorreading;
 
+import eu.wodrobina.rodos.sensorreading.api.SensorReadingRequest;
 import eu.wodrobina.rodos.sensorreading.api.SensorReadingResource;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * An entity that represents single sensor reading.
  */
-public class SensorReading {
+class SensorReading {
 
     private Long id;
-    private String sensorName;
+    private UUID sensorId;
     private BigDecimal reading;
     private String unit;
     private Instant createdAt;
 
-    SensorReading(Long id, String sensorName, BigDecimal reading, String unit, Instant createdAt) {
+    SensorReading(Long id, UUID sensorId, BigDecimal reading, String unit, Instant createdAt) {
         this.id = id;
-        this.sensorName = sensorName;
+        this.sensorId = sensorId;
         this.reading = reading.setScale(2, RoundingMode.HALF_UP);
         this.unit = unit;
         this.createdAt = createdAt;
     }
 
-    public static SensorReading of(String sensorName,
+    public static SensorReading of(UUID sensorId,
                                    BigDecimal reading,
                                    SensorUnit sensorUnit) {
-        return new SensorReading(null, sensorName, reading, sensorUnit.getUnit(), Instant.now());
+        return new SensorReading(null, sensorId, reading, sensorUnit.getUnit(), Instant.now());
     }
 
-    public static SensorReading of(String sensorName,
+    public static SensorReading of(UUID sensorId,
                                    double reading,
                                    SensorUnit sensorUnit) {
-        return new SensorReading(null, sensorName, BigDecimal.valueOf(reading), sensorUnit.getUnit(), Instant.now());
+        return new SensorReading(null, sensorId, BigDecimal.valueOf(reading), sensorUnit.getUnit(), Instant.now());
+    }
+
+    public static SensorReading from(SensorReadingRequest request) {
+        return new SensorReading(null, request.sensorId(), request.reading(), request.unit(), Instant.now());
     }
 
     public Long id() {
         return id;
     }
 
-    public String sensorName() {
-        return sensorName;
+    public UUID sensorId() {
+        return sensorId;
     }
 
     public BigDecimal reading() {
@@ -77,7 +83,7 @@ public class SensorReading {
 
     static SensorReadingResource toResource(SensorReading sensorReading) {
         return new SensorReadingResource(sensorReading.id(),
-                sensorReading.sensorName(),
+                sensorReading.sensorId(),
                 sensorReading.reading(),
                 sensorReading.unit(),
                 sensorReading.createdAt());

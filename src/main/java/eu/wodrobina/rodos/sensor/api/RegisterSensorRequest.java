@@ -11,8 +11,15 @@ public record RegisterSensorRequest(@NotNull String sensorName, String sensorCom
     public static RegisterSensorRequest fromRequestParams(Map<String, Object> params) {
         return new RegisterSensorRequest(
                 requireString(params, "sensorName"),
-                requireString(params, "sensorComment"),
+                getSensorComment(params),
                 requireString(params, "publicKey")
         );
+    }
+
+    private static String getSensorComment(Map<String, Object> params) {
+        if (params.containsKey("sensorComment")) {
+            return params.get("sensorComment").toString();
+        }
+        return null;
     }
 }

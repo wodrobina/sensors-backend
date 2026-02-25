@@ -12,38 +12,39 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Repository
-class SensorRepositoryImpl implements SensorRepository {
+class SensorReadingRepositoryImpl implements SensorReadingRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
     private static final String TABLE = "sensor_reading";
 
-    public static final String SAVE = "INSERT INTO " + TABLE + " (sensor_name, reading, unit, created_at) VALUES (?, ?, ?, ?)";
-    public static final String FIND_BY_SENSOR_NAME = "SELECT id, sensor_name, reading, unit, created_at FROM " + TABLE + " WHERE sensor_name = ?";
-    public static final String FIND_BY_SENSOR_NAME_AND_TIME_RANGE =
-            "SELECT id, sensor_name, reading, unit " +
+    public static final String SAVE = "INSERT INTO " + TABLE + " (sensor_id, reading, unit, created_at) VALUES (?, ?, ?, ?)";
+    public static final String FIND_BY_SENSOR_ID = "SELECT id, sensor_id, reading, unit, created_at FROM " + TABLE + " WHERE sensor_id = ?";
+    public static final String FIND_BY_SENSOR_ID_AND_TIME_RANGE =
+            "SELECT id, sensor_id, reading, unit " +
                     "FROM " + TABLE + " " +
-                    "WHERE sensor_name = ? " +
+                    "WHERE sensor_id = ? " +
                     "AND created_at >= ? " +
                     "AND created_at <= ?";
 
-    public SensorRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    public SensorReadingRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public List<SensorReading> findAllBySensorName(String sensorName) {
-        return jdbcTemplate.query(FIND_BY_SENSOR_NAME, ROW_MAPPER, sensorName);
+    public List<SensorReading> findAllBySensorId(UUID sensorId) {
+        return jdbcTemplate.query(FIND_BY_SENSOR_ID, ROW_MAPPER, sensorId);
     }
 
     @Override
-    public List<SensorReading> findAllBySensorName(String sensorName, Instant from, Instant to) {
+    public List<SensorReading> findAllBySensorId(UUID sensorId, Instant from, Instant to) {
         return jdbcTemplate.query(
-                FIND_BY_SENSOR_NAME_AND_TIME_RANGE,
+                FIND_BY_SENSOR_ID_AND_TIME_RANGE,
                 ROW_MAPPER,
-                sensorName,
+                sensorId,
                 from,
                 to
         );
@@ -66,7 +67,7 @@ class SensorRepositoryImpl implements SensorRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(SAVE, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, dto.sensorName());
+            ps.setObject(1, dto.sensorId());
             ps.setBigDecimal(2, dto.reading());
             ps.setString(3, dto.unit());
             ps.setTimestamp(4, Timestamp.from(dto.createdAt()));
@@ -79,12 +80,12 @@ class SensorRepositoryImpl implements SensorRepository {
         }
         Number key = (Number) keys.get("ID");
         long newId = key.longValue();
-        return new SensorReading(newId, dto.sensorName(), dto.reading(), dto.unit(), Instant.now());
+        return new SensorReading(newId, dto.sensorId(), dto.reading(), dto.unit(), Instant.now());
     }
 
     private static final RowMapper<SensorReading> ROW_MAPPER = (rs, rowNum) -> new SensorReading(
             rs.getLong("id"),
-            rs.getString("sensor_name"),
+            rs.getObject("sensor_id", UUID.class),
             rs.getBigDecimal("reading"),
             rs.getString("unit"),
             rs.getObject("created_at", java.time.OffsetDateTime.class).toInstant()

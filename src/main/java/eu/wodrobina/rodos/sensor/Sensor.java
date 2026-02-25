@@ -1,8 +1,11 @@
 package eu.wodrobina.rodos.sensor;
 
+import api.SensorResource;
+
+import java.util.Objects;
 import java.util.UUID;
 
-public class Sensor {
+class Sensor {
     private UUID id;
     private String sensorName;
     private String sensorComment;
@@ -34,4 +37,22 @@ public class Sensor {
     public String getPublicKey() {
         return publicKey;
     }
+
+    public SensorResource asResource() {
+        return new SensorResource(this.getId(), this.getSensorName(), this.getSensorComment(), this.getPublicKey());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Sensor that = (Sensor) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
 }

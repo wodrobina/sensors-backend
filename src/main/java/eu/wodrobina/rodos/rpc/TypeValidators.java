@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class TypeValidators {
 
@@ -21,6 +22,26 @@ public class TypeValidators {
             throw new JsonRpcException(JsonRpcError.invalidParams("'" + key + "' must be a non-empty string"));
         }
         return s;
+    }
+
+    public static UUID requireUuid(Map<String, Object> params, String key) {
+        if (params == null) {
+            throw new JsonRpcException(JsonRpcError.invalidParams("params is required"));
+        }
+        Object v = params.get(key);
+
+        return switch (v) {
+            case null -> throw new JsonRpcException(JsonRpcError.invalidParams("'" + key + "' is required"));
+            case UUID u -> u;
+            case String s when StringUtils.hasText(s) -> {
+                try {
+                    yield UUID.fromString(s.trim());
+                } catch (IllegalArgumentException ex) {
+                    throw new JsonRpcException(JsonRpcError.invalidParams("'" + key + "' must be a valid UUID"));
+                }
+            }
+            default -> throw new JsonRpcException(JsonRpcError.invalidParams("'" + key + "' must be a UUID"));
+        };
     }
 
     public static BigDecimal requireDecimal(Map<String, Object> params, String key) {
