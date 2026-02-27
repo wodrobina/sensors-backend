@@ -132,8 +132,7 @@ classDiagram
 
 ### Key Engineering Decisions
 - **Dependency Injection**: Spring's IoC container
-- **JSON-RPC**: Offers clean and simple solution 
-- **MVC pattern**: Clean separation between service and database logic
+- **JSON-RPC**: Offers clean and simple solution
 - **DTO Pattern**: Separation of domain models from API responses
 
 ## Getting Started
