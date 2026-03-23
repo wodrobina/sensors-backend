@@ -1,4 +1,4 @@
-package eu.wodrobina.rodos.rpc;
+package eu.wodrobina.rodos.rpc.api;
 
 public record JsonRpcError(int code, String message, Object data) {
 

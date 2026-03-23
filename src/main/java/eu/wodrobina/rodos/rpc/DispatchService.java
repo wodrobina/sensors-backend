@@ -1,5 +1,7 @@
 package eu.wodrobina.rodos.rpc;
 
+import eu.wodrobina.rodos.rpc.api.JsonRpcError;
+import eu.wodrobina.rodos.rpc.exception.JsonRpcException;
 import eu.wodrobina.rodos.sensor.SensorService;
 import eu.wodrobina.rodos.sensor.api.RegisterSensorRequest;
 import eu.wodrobina.rodos.sensorreading.SensorReadingService;

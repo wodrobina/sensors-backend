@@ -18,8 +18,7 @@ public class TestUtils {
             throw new RuntimeException("Something were wrong with key pair generation.");
         }
         KeyPair pair = generator.generateKeyPair();
-        String publicKeyBase64 = Base64.getEncoder()
+        return Base64.getEncoder()
                 .encodeToString(pair.getPublic().getEncoded());
-        return publicKeyBase64;
     }
 }

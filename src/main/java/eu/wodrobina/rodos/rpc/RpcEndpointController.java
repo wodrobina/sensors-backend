@@ -1,5 +1,9 @@
 package eu.wodrobina.rodos.rpc;
 
+import eu.wodrobina.rodos.rpc.api.JsonRpcError;
+import eu.wodrobina.rodos.rpc.api.JsonRpcRequest;
+import eu.wodrobina.rodos.rpc.api.JsonRpcResponse;
+import eu.wodrobina.rodos.rpc.exception.JsonRpcException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +17,7 @@ public class RpcEndpointController {
 
     private final DispatchService dispatchService;
 
-    public RpcEndpointController(DispatchService dispatchService) {
+    RpcEndpointController(DispatchService dispatchService) {
         this.dispatchService = dispatchService;
     }
 

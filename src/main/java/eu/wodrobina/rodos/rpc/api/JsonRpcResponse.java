@@ -1,4 +1,4 @@
-package eu.wodrobina.rodos.rpc;
+package eu.wodrobina.rodos.rpc.api;
 
 public record JsonRpcResponse(String jsonrpc, Object id, Object result, JsonRpcError error) {
     public static JsonRpcResponse ok(Object id, Object result) {

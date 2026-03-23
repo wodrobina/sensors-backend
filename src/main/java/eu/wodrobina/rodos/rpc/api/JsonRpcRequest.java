@@ -1,4 +1,4 @@
-package eu.wodrobina.rodos.rpc;
+package eu.wodrobina.rodos.rpc.api;
 
 import java.util.Map;
 

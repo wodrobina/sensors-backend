@@ -1,15 +1,17 @@
-package eu.wodrobina.rodos.rpc;
+package eu.wodrobina.rodos.rpc.exception;
+
+import eu.wodrobina.rodos.rpc.api.JsonRpcError;
 
 public class JsonRpcException extends RuntimeException {
 
     private final JsonRpcError error;
 
-    JsonRpcException(JsonRpcError error) {
+    public JsonRpcException(JsonRpcError error) {
         super(error != null ? error.message() : null);
         this.error = error;
     }
 
-    JsonRpcError error() {
+    public JsonRpcError error() {
         return error;
     }
 
