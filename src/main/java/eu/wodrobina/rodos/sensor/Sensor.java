@@ -1,6 +1,6 @@
 package eu.wodrobina.rodos.sensor;
 
-import api.SensorResource;
+import eu.wodrobina.rodos.sensor.api.SensorResource;
 
 import java.util.Objects;
 import java.util.UUID;

@@ -1,7 +1,7 @@
 package eu.wodrobina.rodos.sensorreading.api;
 
 
-import api.SensorResource;
+import eu.wodrobina.rodos.sensor.api.SensorResource;
 import eu.wodrobina.rodos.sensor.SensorService;
 import eu.wodrobina.rodos.sensor.api.RegisterSensorRequest;
 import eu.wodrobina.rodos.sensorreading.SensorReadingService;
@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

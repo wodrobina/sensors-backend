@@ -1,18 +1,17 @@
 package eu.wodrobina.rodos.sensor;
 
-import api.SensorResource;
+import eu.wodrobina.rodos.sensor.api.SensorResource;
 import eu.wodrobina.rodos.sensor.api.RegisterSensorRequest;
-import org.springframework.stereotype.Service;
+import eu.wodrobina.rodos.sensor.exception.SensorAlreadyRegisteredException;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@Service
 public class SensorService {
 
     private final SensorRepository sensorRepository;
 
-    public SensorService(SensorRepository sensorRepository) {
+    SensorService(SensorRepository sensorRepository) {
         this.sensorRepository = sensorRepository;
     }
 

@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-class SensorReadingRepositoryImplTest {
+class SensorReadingRepositoryTest {
 
     @Autowired
     private SensorReadingRepository sensorRepository;

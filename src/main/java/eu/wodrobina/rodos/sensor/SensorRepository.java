@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
 class SensorRepository {
 
     private final JdbcTemplate jdbcTemplate;

@@ -1,4 +1,4 @@
-package eu.wodrobina.rodos.sensor;
+package eu.wodrobina.rodos.sensor.exception;
 
 public class SensorAlreadyRegisteredException extends RuntimeException {
     public SensorAlreadyRegisteredException() {

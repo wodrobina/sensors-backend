@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import static org.assertj.core.util.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 
 public abstract class TruncateTablesExtension implements AfterEachCallback {
@@ -13,6 +13,6 @@ public abstract class TruncateTablesExtension implements AfterEachCallback {
     protected final JdbcTemplate jdbcTemplate;
 
     public TruncateTablesExtension(@NotNull JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = checkNotNull(jdbcTemplate);
+        this.jdbcTemplate = requireNonNull(jdbcTemplate);
     }
 }

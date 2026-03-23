@@ -1,4 +1,4 @@
-package api;
+package eu.wodrobina.rodos.sensor.api;
 
 import java.util.UUID;
 
