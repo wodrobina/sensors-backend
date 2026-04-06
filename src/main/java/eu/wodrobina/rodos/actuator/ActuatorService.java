@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class ActuatorManagementService {
+public class ActuatorService {
 
     private final ActuatorRepository actuatorRepository;
     private final ScheduleRepository scheduleRepository;
 
-    public ActuatorManagementService(ActuatorRepository actuatorRepository,
-                                     ScheduleRepository scheduleRepository) {
+    ActuatorService(ActuatorRepository actuatorRepository,
+                    ScheduleRepository scheduleRepository) {
         this.actuatorRepository = actuatorRepository;
         this.scheduleRepository = scheduleRepository;
     }
@@ -31,9 +31,9 @@ public class ActuatorManagementService {
 
     public ActuatorScheduleResource addSchedule(RegisterActuatorScheduleRequest request) {
         return scheduleRepository.saveSchedule(new ActuatorId(request.actuatorId()),
-                request.activationTime(),
-                request.durationSeconds(),
-                request.enabled())
+                        request.activationTime(),
+                        request.durationSeconds(),
+                        request.enabled())
                 .asResource();
     }
 

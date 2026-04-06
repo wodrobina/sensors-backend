@@ -93,7 +93,7 @@ class Actuator {
     @Override
     public String toString() {
         return "Actuator{" +
-                "id=" + id +
+                "scheduleId=" + id +
                 ", actuatorName='" + actuatorName + '\'' +
                 ", baseUrl='" + baseUrl + '\'' +
                 '}';

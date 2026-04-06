@@ -1,14 +1,14 @@
 CREATE TABLE rod.actuator
 (
-    id            VARCHAR(36) PRIMARY KEY,
+    id            uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     actuator_name VARCHAR(100) NOT NULL,
     base_url      VARCHAR(255) NOT NULL
     );
 
 CREATE TABLE rod.actuator_schedules
 (
-    id               SERIAL PRIMARY KEY,
-    actuator_id      VARCHAR(36) NOT NULL,
+    id               uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    actuator_id      uuid NOT NULL,
     activation_time  TIME NOT NULL,
     duration_seconds INT NOT NULL,
     enabled          BOOLEAN NOT NULL DEFAULT TRUE,

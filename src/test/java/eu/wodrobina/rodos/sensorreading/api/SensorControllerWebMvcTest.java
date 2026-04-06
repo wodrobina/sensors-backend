@@ -83,7 +83,7 @@ class SensorControllerWebMvcTest {
                 """
                         {
                           "jsonrpc": "2.0",
-                          "id": 1,
+                          "scheduleId": 1,
                           "method": "sensor.register",
                           "params": {
                             "sensorName": "%s",

@@ -7,7 +7,7 @@ import java.util.Objects;
 
 class ActuatorSchedule {
 
-    private Long id;
+    private ScheduleId scheduleId;
     private ActuatorId actuatorId;
     private LocalTime activationTime;
     private int durationSeconds;
@@ -16,8 +16,8 @@ class ActuatorSchedule {
     public ActuatorSchedule() {
     }
 
-    public ActuatorSchedule(Long id, ActuatorId actuatorId, LocalTime activationTime, int durationSeconds, boolean enabled) {
-        this.id = id;
+    public ActuatorSchedule(ScheduleId scheduleId, ActuatorId actuatorId, LocalTime activationTime, int durationSeconds, boolean enabled) {
+        this.scheduleId = scheduleId;
         this.actuatorId = actuatorId;
         this.activationTime = activationTime;
         this.durationSeconds = durationSeconds;
@@ -31,12 +31,12 @@ class ActuatorSchedule {
         this.enabled = enabled;
     }
 
-    public Long getId() {
-        return id;
+    public ScheduleId getScheduleId() {
+        return scheduleId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setScheduleId(ScheduleId scheduleId) {
+        this.scheduleId = scheduleId;
     }
 
     public ActuatorId getActuatorId() {
@@ -72,7 +72,7 @@ class ActuatorSchedule {
     }
 
     public ActuatorScheduleResource asResource() {
-        return new ActuatorScheduleResource(this.id, this.actuatorId, this.activationTime, this.durationSeconds, this.enabled);
+        return new ActuatorScheduleResource(this.scheduleId, this.actuatorId, this.activationTime, this.durationSeconds, this.enabled);
     }
 
     @Override
@@ -80,11 +80,11 @@ class ActuatorSchedule {
         if (o == null || getClass() != o.getClass()) return false;
 
         ActuatorSchedule that = (ActuatorSchedule) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(scheduleId, that.scheduleId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(scheduleId);
     }
 }

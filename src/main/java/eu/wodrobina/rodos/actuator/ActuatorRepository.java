@@ -2,13 +2,18 @@ package eu.wodrobina.rodos.actuator;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Repository
-public class ActuatorRepository {
+class ActuatorRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -23,25 +28,36 @@ public class ActuatorRepository {
                     rs.getString("base_url")
             );
 
-    public Actuator save(String actuatorName, String baseUrl) {
-        UUID id = UUID.randomUUID();
+    Actuator save(String actuatorName, String baseUrl) {
 
         String sql = """
-                INSERT INTO actuator (id, actuator_name, base_url)
-                VALUES (?, ?, ?)
+                INSERT INTO actuator (actuator_name, base_url)
+                VALUES (?, ?)
                 """;
 
-        jdbcTemplate.update(sql, id.toString(), actuatorName, baseUrl);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        return new Actuator(id, actuatorName, baseUrl);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, actuatorName);
+            ps.setString(2, baseUrl);
+            return ps;
+        }, keyHolder);
+
+        Map<String, Object> keys = keyHolder.getKeys();
+        if (!keys.containsKey("ID")) {
+            throw new IllegalStateException("Insert succeeded but no generated key returned");
+        }
+        UUID key = (UUID) keys.get("ID");
+        return new Actuator(key, actuatorName, baseUrl);
     }
 
-    public void deleteById(UUID id) {
+    void deleteById(UUID id) {
         String sql = "DELETE FROM actuator WHERE id = ?";
         jdbcTemplate.update(sql, id.toString());
     }
 
-    public Actuator findById(UUID id) {
+    Actuator findById(UUID id) {
         String sql = """
                 SELECT id, actuator_name, base_url
                 FROM actuator
@@ -51,7 +67,7 @@ public class ActuatorRepository {
         return jdbcTemplate.queryForObject(sql, rowMapper, id.toString());
     }
 
-    public List<Actuator> findAll() {
+    List<Actuator> findAll() {
         String sql = """
                 SELECT id, actuator_name, base_url
                 FROM actuator

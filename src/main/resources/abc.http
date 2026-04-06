@@ -1,0 +1,173 @@
+@rpcUrl = http://localhost:8080/rpc
+
+### 1. Register Actuator + capture actuatorId
+POST {{rpcUrl}}
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 10,
+  "method": "actuator.register",
+  "params": {
+    "actuatorName": "Terrace_Lamp",
+    "baseUrl": "http://localhost:8080"
+  }
+}
+
+> {%
+    if (response.status === 200 && response.body.result && response.body.result.id) {
+        client.global.set("last_actuator_id", response.body.result.id);
+        client.log("Actuator ID captured: " + response.body.result.id);
+    } else {
+        client.log("Failed to capture actuatorId");
+    }
+%}
+
+### 2. Add Schedule + capture scheduleId
+POST {{rpcUrl}}
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 11,
+  "method": "actuator.schedule.add",
+  "params": {
+    "actuatorId": "{{last_actuator_id}}",
+    "activationTime": "21:15:00",
+    "durationSeconds": 45,
+    "enabled": true
+  }
+}
+
+> {%
+    if (response.status === 200 && response.body.result && response.body.result.scheduleId.id) {
+        client.global.set("last_schedule_id", response.body.result.scheduleId.id);
+        client.log("Schedule ID captured: " + response.body.result.scheduleId.id);
+    } else {
+        client.log("Failed to capture scheduleId");
+    }
+%}
+
+### 3. Add Condition: TEMPERATURE > 10 + capture conditionId
+POST {{rpcUrl}}
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 12,
+  "method": "actuator.condition.add",
+  "params": {
+    "scheduleId": "{{last_schedule_id}}",
+    "sensorId": "22222222-2222-2222-2222-222222222222",
+    "readingType": "TEMPERATURE",
+    "operator": "GREATER_THAN",
+    "expectedValue": 10,
+    "enabled": true
+  }
+}
+
+> {%
+    if (response.status === 200 && response.body.result && response.body.result.id) {
+        client.global.set("last_condition_id_temp", response.body.result.id);
+        client.log("Temperature condition ID captured: " + response.body.result.id);
+    } else {
+        client.log("Failed to capture temperature conditionId");
+    }
+%}
+
+### 4. Add Condition: SOIL_MOISTURE < 50 + capture conditionId
+POST {{rpcUrl}}
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 13,
+  "method": "actuator.condition.add",
+  "params": {
+    "scheduleId": "{{last_schedule_id}}",
+    "sensorId": "33333333-3333-3333-3333-333333333333",
+    "readingType": "SOIL_MOISTURE",
+    "operator": "LESS_THAN",
+    "expectedValue": 50,
+    "enabled": true
+  }
+}
+
+> {%
+    if (response.status === 200 && response.body.result && response.body.result.id) {
+        client.global.set("last_condition_id_temp", response.body.result.id);
+        client.log("Soil moisture condition ID captured: " + response.body.result.id);
+    } else {
+        client.log("Failed to capture soil moisture conditionId");
+    }
+%}
+
+### 5. Delete TEMPERATURE condition
+POST {{rpcUrl}}
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 14,
+  "method": "actuator.condition.delete",
+  "params": {
+    "conditionId": "{{last_condition_id_temp}}"
+  }
+}
+
+### 6. Delete SOIL_MOISTURE condition
+POST {{rpcUrl}}
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 15,
+  "method": "actuator.condition.delete",
+  "params": {
+    "conditionId": "{{last_condition_id_soil}}"
+  }
+}
+
+### 7. Delete Schedule
+POST {{rpcUrl}}
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 16,
+  "method": "actuator.schedule.delete",
+  "params": {
+    "scheduleId": "{{last_schedule_id}}"
+  }
+}
+
+### 8. Delete Actuator
+POST {{rpcUrl}}
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 17,
+  "method": "actuator.delete",
+  "params": {
+    "actuatorId": "{{last_actuator_id}}"
+  }
+}
+
+### 9. Negative test: invalid operator
+POST {{rpcUrl}}
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 18,
+  "method": "actuator.condition.add",
+  "params": {
+    "scheduleId": "{{last_schedule_id}}",
+    "sensorId": "33333333-3333-3333-3333-333333333333",
+    "readingType": "SOIL_MOISTURE",
+    "operator": "BAD_OPERATOR",
+    "expectedValue": 50,
+    "enabled": true
+  }
+}

@@ -1,6 +1,8 @@
 package eu.wodrobina.rodos.rpc;
 
-import eu.wodrobina.rodos.actuator.ActuatorManagementService;
+import eu.wodrobina.rodos.actuator.ActuatorConditionService;
+import eu.wodrobina.rodos.actuator.ActuatorService;
+import eu.wodrobina.rodos.actuator.api.AddActuatorConditionRequest;
 import eu.wodrobina.rodos.actuator.api.RegisterActuatorRequest;
 import eu.wodrobina.rodos.actuator.api.RegisterActuatorScheduleRequest;
 import eu.wodrobina.rodos.rpc.api.JsonRpcError;
@@ -10,7 +12,6 @@ import eu.wodrobina.rodos.sensor.api.RegisterSensorRequest;
 import eu.wodrobina.rodos.sensorreading.SensorReadingService;
 import eu.wodrobina.rodos.sensorreading.SensorUnit;
 import eu.wodrobina.rodos.sensorreading.api.SensorReadingRequest;
-import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,14 +23,16 @@ class DispatchService {
 
     private final SensorReadingService sensorReadingService;
     private final SensorService sensorService;
-    private final ActuatorManagementService actuatorManagementService;
+    private final ActuatorService actuatorService;
+    private final ActuatorConditionService actuatorConditionService;
 
     public DispatchService(SensorReadingService sensorReadingService,
                            SensorService sensorService,
-                           ActuatorManagementService actuatorManagementService) {
+                           ActuatorService actuatorService, ActuatorConditionService actuatorConditionService) {
         this.sensorReadingService = sensorReadingService;
         this.sensorService = sensorService;
-        this.actuatorManagementService = actuatorManagementService;
+        this.actuatorService = actuatorService;
+        this.actuatorConditionService = actuatorConditionService;
     }
 
     public Object dispatch(String method, Map<String, Object> params) {
@@ -49,21 +52,30 @@ class DispatchService {
                     sensorService.registerSensor(RegisterSensorRequest.fromRequestParams(params));
 
             case "actuator.register" ->
-                    actuatorManagementService.registerActuator(RegisterActuatorRequest.fromRequestParams(params));
+                    actuatorService.registerActuator(RegisterActuatorRequest.fromRequestParams(params));
 
             case "actuator.delete" ->
             {
-                actuatorManagementService.deleteActuator(requireUuid(params, "actuatorId"));
+                actuatorService.deleteActuator(requireUuid(params, "actuatorId"));
                 yield Map.of("status", "OK");
             }
 
             case "actuator.schedule.add" ->
-                    actuatorManagementService.addSchedule(RegisterActuatorScheduleRequest.fromRequestParams(params));
+                    actuatorService.addSchedule(RegisterActuatorScheduleRequest.fromRequestParams(params));
 
             case "actuator.schedule.delete" ->
             {
                 Long scheduleId = Long.parseLong(params.get("scheduleId").toString());
-                actuatorManagementService.deleteSchedule(scheduleId);
+                actuatorService.deleteSchedule(scheduleId);
+                yield Map.of("status", "OK");
+            }
+
+            case "actuator.condition.add" ->
+                    actuatorConditionService.addCondition(AddActuatorConditionRequest.fromRequestParams(params));
+
+            case "actuator.condition.delete" -> {
+                UUID conditionId = requireUuid(params, "conditionId");
+                actuatorConditionService.deleteCondition(conditionId);
                 yield Map.of("status", "OK");
             }
 

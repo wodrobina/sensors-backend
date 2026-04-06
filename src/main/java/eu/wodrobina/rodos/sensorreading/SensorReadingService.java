@@ -1,13 +1,13 @@
 package eu.wodrobina.rodos.sensorreading;
 
-import eu.wodrobina.rodos.sensor.exception.SensorMissingException;
 import eu.wodrobina.rodos.sensor.SensorService;
+import eu.wodrobina.rodos.sensor.exception.SensorMissingException;
 import eu.wodrobina.rodos.sensorreading.api.SensorReadingRequest;
 import eu.wodrobina.rodos.sensorreading.api.SensorReadingResource;
-import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class SensorReadingService {
@@ -25,6 +25,11 @@ public class SensorReadingService {
         return allBySensorName.stream()
                 .map(SensorReading::asResource)
                 .toList();
+    }
+
+    public Optional<SensorReadingResource> findLatestBySensorId(UUID sensorId) {
+        return sensorRepository.findLatestBySensorId(sensorId)
+                .map(SensorReading::asResource);
     }
 
     public SensorReadingResource save(SensorReadingRequest sensorReadingRequest) {

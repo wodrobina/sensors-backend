@@ -7,9 +7,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Repository
@@ -23,7 +25,7 @@ public class ScheduleRepository {
 
     private final RowMapper<ActuatorSchedule> rowMapper = (rs, rowNum) ->
             new ActuatorSchedule(
-                    rs.getLong("id"),
+                    new ScheduleId(UUID.fromString(rs.getString("id"))),
                     new ActuatorId(UUID.fromString(rs.getString("actuator_id"))),
                     rs.getTime("activation_time").toLocalTime(),
                     rs.getInt("duration_seconds"),
@@ -53,21 +55,22 @@ public class ScheduleRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, actuatorId.id().toString());
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setObject(1, actuatorId.id());
             ps.setTime(2, Time.valueOf(activationTime));
             ps.setInt(3, durationSeconds);
             ps.setBoolean(4, enabled);
             return ps;
         }, keyHolder);
 
-        Number key = keyHolder.getKey();
-        if (key == null) {
+        Map<String, Object> keys = keyHolder.getKeys();
+        if (!keys.containsKey("ID")) {
             throw new IllegalStateException("Insert succeeded but no generated key returned");
         }
+        UUID key = (UUID) keys.get("ID");
 
         return new ActuatorSchedule(
-                key.longValue(),
+                new ScheduleId(key),
                 actuatorId,
                 activationTime,
                 durationSeconds,

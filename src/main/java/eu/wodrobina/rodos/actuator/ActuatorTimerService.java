@@ -7,12 +7,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class ActuatorTimerService {
+class ActuatorTimerService {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
     private final ActuatorHttpService actuatorHttpService;
 
-    public ActuatorTimerService(ActuatorHttpService actuatorHttpService) {
+    ActuatorTimerService(ActuatorHttpService actuatorHttpService) {
         this.actuatorHttpService = actuatorHttpService;
     }
 

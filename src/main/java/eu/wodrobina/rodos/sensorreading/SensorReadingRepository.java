@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -23,6 +24,7 @@ class SensorReadingRepository {
 
     public static final String SAVE = "INSERT INTO " + TABLE + " (sensor_id, reading, unit, created_at) VALUES (?, ?, ?, ?)";
     public static final String FIND_BY_SENSOR_ID = "SELECT id, sensor_id, reading, unit, created_at FROM " + TABLE + " WHERE sensor_id = ?";
+    public static final String FIND_LATEST_BY_SENSOR_ID = "SELECT id, sensor_id, reading, unit, created_at FROM " + TABLE + " WHERE sensor_id = ? ORDER BY created_at DESC LIMIT 1";
     public static final String FIND_BY_SENSOR_ID_AND_TIME_RANGE =
             "SELECT id, sensor_id, reading, unit " +
                     "FROM " + TABLE + " " +
@@ -47,6 +49,13 @@ class SensorReadingRepository {
                 to
         );
     }
+
+    public Optional<SensorReading> findLatestBySensorId(UUID sensorId) {
+        return jdbcTemplate.query(FIND_LATEST_BY_SENSOR_ID, ROW_MAPPER, sensorId)
+                .stream()
+                .findFirst();
+    }
+
 
     public SensorReading save(SensorReading dto) {
         if (dto == null) {

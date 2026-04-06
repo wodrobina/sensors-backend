@@ -13,18 +13,20 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class AutomationService {
+class AutomationService {
 
     private static final Logger logger = LoggerFactory.getLogger(AutomationService.class);
 
     private final ScheduleRepository repository;
     private final ActuatorTimerService actuatorTimerService;
+    private final SensorEvaluationService sensorEvaluationService;
     private final Map<UUID, Actuator> registeredActuators = new ConcurrentHashMap<>();
 
     public AutomationService(ScheduleRepository repository,
-                             ActuatorTimerService actuatorTimerService) {
+                             ActuatorTimerService actuatorTimerService, SensorEvaluationService sensorEvaluationService) {
         this.repository = repository;
         this.actuatorTimerService = actuatorTimerService;
+        this.sensorEvaluationService = sensorEvaluationService;
     }
 
     public void registerActuator(Actuator actuator) {
@@ -39,12 +41,16 @@ public class AutomationService {
         List<ActuatorSchedule> activeSchedules = repository.findSchedulesForTime(now);
 
         for (ActuatorSchedule schedule : activeSchedules) {
+            if (!sensorEvaluationService.areConditionsSatisfied(schedule.getScheduleId())) {
+                logger.info("[Automation] Conditions not satisfied for schedule {}", schedule.getScheduleId().id());
+                continue;
+            }
+
             UUID actuatorId = schedule.getActuatorId().id();
             Actuator actuator = registeredActuators.get(actuatorId);
 
             if (actuator != null) {
                 logger.info("[Automation] Turning on actuator: {} for {} seconds", actuatorId, schedule.getDurationSeconds());
-
                 actuatorTimerService.turnOnForDuration(actuator, schedule.getDurationSeconds());
             }
         }

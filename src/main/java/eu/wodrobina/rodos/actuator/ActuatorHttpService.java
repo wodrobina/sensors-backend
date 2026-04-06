@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class ActuatorHttpService {
+class ActuatorHttpService {
 
     private static final Logger logger = LoggerFactory.getLogger(ActuatorHttpService.class);
 
@@ -17,12 +17,12 @@ public class ActuatorHttpService {
         this.restTemplate = restTemplate;
     }
 
-    public void turnOn(Actuator actuator) {
+    void turnOn(Actuator actuator) {
         String url = actuator.buildOnUrl();
         call(url);
     }
 
-    public void turnOff(Actuator actuator) {
+    void turnOff(Actuator actuator) {
         String url = actuator.buildOffUrl();
         call(url);
     }

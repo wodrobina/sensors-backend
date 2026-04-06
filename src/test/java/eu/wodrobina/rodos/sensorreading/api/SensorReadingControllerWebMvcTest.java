@@ -110,7 +110,7 @@ class SensorReadingControllerWebMvcTest {
                 """
                         {
                           "jsonrpc": "2.0",
-                          "id": 2,
+                          "scheduleId": 2,
                           "method": "sensor.reading.create",
                           "params": {
                             "sensorId": "%s",
@@ -127,7 +127,7 @@ class SensorReadingControllerWebMvcTest {
                 """
                         {
                           "jsonrpc": "2.0",
-                          "id": 1,
+                          "scheduleId": 1,
                           "method": "sensor.reading.findAllByName",
                           "params": {
                             "sensorId": "%s"
@@ -146,7 +146,7 @@ class SensorReadingControllerWebMvcTest {
         String requestJson = """
                 {
                   "jsonrpc": "2.0",
-                  "id": 123,
+                  "scheduleId": 123,
                   "method": "no.such.method",
                   "params": {}
                 }
