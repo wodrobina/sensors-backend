@@ -1,5 +1,7 @@
 package eu.wodrobina.rodos.actuator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class AutomationService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AutomationService.class);
 
     private final ScheduleRepository repository;
     private final ActuatorTimerService actuatorTimerService;
@@ -28,9 +32,9 @@ public class AutomationService {
     }
 
     @Scheduled(cron = "0 * * * * *")
-    public void checkSchedules() {
+    void checkSchedules() {
         LocalTime now = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
-        System.out.println("[Automation] Sprawdzanie harmonogramów dla godziny: " + now);
+        logger.info("[Automation] Check schedule for time: {}", now);
 
         List<ActuatorSchedule> activeSchedules = repository.findSchedulesForTime(now);
 
@@ -39,12 +43,9 @@ public class AutomationService {
             Actuator actuator = registeredActuators.get(actuatorId);
 
             if (actuator != null) {
-                System.out.println("[Automation] Włączam actuator: " + actuatorId +
-                        " na " + schedule.getDurationSeconds() + " sekund");
+                logger.info("[Automation] Turning on actuator: {} for {} seconds", actuatorId, schedule.getDurationSeconds());
 
                 actuatorTimerService.turnOnForDuration(actuator, schedule.getDurationSeconds());
-            } else {
-                System.err.println("[Automation] Brak zarejestrowanego aktuatora: " + actuatorId);
             }
         }
     }

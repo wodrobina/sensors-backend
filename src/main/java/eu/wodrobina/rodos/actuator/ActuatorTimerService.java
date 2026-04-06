@@ -16,11 +16,9 @@ public class ActuatorTimerService {
         this.actuatorHttpService = actuatorHttpService;
     }
 
-    public void turnOnForDuration(Actuator actuator, int durationSeconds) {
+    void turnOnForDuration(Actuator actuator, int durationSeconds) {
         actuatorHttpService.turnOn(actuator);
 
-        scheduler.schedule(() -> {
-            actuatorHttpService.turnOff(actuator);
-        }, durationSeconds, TimeUnit.SECONDS);
+        scheduler.schedule(() -> actuatorHttpService.turnOff(actuator), durationSeconds, TimeUnit.SECONDS);
     }
 }

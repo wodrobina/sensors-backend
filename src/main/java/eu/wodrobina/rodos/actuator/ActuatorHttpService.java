@@ -1,11 +1,15 @@
 package eu.wodrobina.rodos.actuator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 public class ActuatorHttpService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ActuatorHttpService.class);
 
     private final RestTemplate restTemplate;
 
@@ -26,9 +30,9 @@ public class ActuatorHttpService {
     private void call(String url) {
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-            System.out.println("[HTTP] GET " + url + " -> " + response.getStatusCode());
+            logger.info("[HTTP] GET {} -> {}", url, response.getStatusCode());
         } catch (Exception e) {
-            System.err.println("[HTTP] Błąd wywołania " + url + ": " + e.getMessage());
+            logger.warn("[HTTP] Error while calling - {}: {}", url, e.getMessage());
         }
     }
 }

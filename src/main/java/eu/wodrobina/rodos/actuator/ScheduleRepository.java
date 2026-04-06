@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
@@ -47,9 +46,9 @@ public class ScheduleRepository {
                                          int durationSeconds,
                                          boolean enabled) {
         String sql = """
-            INSERT INTO actuator_schedules (actuator_id, activation_time, duration_seconds, enabled)
-            VALUES (?, ?, ?, ?)
-            """;
+                INSERT INTO actuator_schedules (actuator_id, activation_time, duration_seconds, enabled)
+                VALUES (?, ?, ?, ?)
+                """;
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -64,7 +63,7 @@ public class ScheduleRepository {
 
         Number key = keyHolder.getKey();
         if (key == null) {
-            throw new IllegalStateException("Nie udało się pobrać wygenerowanego id dla actuator_schedule");
+            throw new IllegalStateException("Insert succeeded but no generated key returned");
         }
 
         return new ActuatorSchedule(
