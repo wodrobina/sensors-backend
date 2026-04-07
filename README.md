@@ -32,7 +32,7 @@ RoDos follows a **layered architecture** pattern with clear separation of concer
 | `eu.wodrobina.rodos.sensor` | Sensor management (CRUD, validation) |
 | `eu.wodrobina.rodos.sensorreading` | Temperature readings (storage, retrieval) |
 | `eu.wodrobina.rodos.sensorreading.api` | DTOs for reading operations |
-| `eu.wodrobina.rodos.sensor.api` | DTOs for sensor operations |
+| `eu.wodrobina.rodos.actuator` | Actuator logic and condition management |
 
 ## Class Dependencies
 
