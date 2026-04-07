@@ -1,8 +1,8 @@
 package eu.wodrobina.rodos.actuator.api;
 
-import java.util.UUID;
+import eu.wodrobina.rodos.actuator.ActuatorId;
 
-public record ActuatorResource(UUID id,
+public record ActuatorResource(ActuatorId id,
                                String actuatorName,
                                String baseUrl) {
 }

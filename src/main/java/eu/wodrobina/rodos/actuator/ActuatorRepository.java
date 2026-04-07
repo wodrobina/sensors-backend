@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -21,14 +22,15 @@ class ActuatorRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Actuator> rowMapper = (rs, rowNum) ->
-            new Actuator(
-                    UUID.fromString(rs.getString("id")),
-                    rs.getString("actuator_name"),
-                    rs.getString("base_url")
-            );
+    Actuator save(Actuator dto) {
 
-    Actuator save(String actuatorName, String baseUrl) {
+        if (dto == null) {
+            throw new IllegalArgumentException("dto is null");
+        }
+
+        if (dto.getActuatorId() != null) {
+            throw new IllegalArgumentException("Actuator cannot be stored with ID assigned.");
+        }
 
         String sql = """
                 INSERT INTO actuator (actuator_name, base_url)
@@ -39,8 +41,8 @@ class ActuatorRepository {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, actuatorName);
-            ps.setString(2, baseUrl);
+            ps.setString(1, dto.getActuatorName());
+            ps.setString(2, dto.getBaseUrl());
             return ps;
         }, keyHolder);
 
@@ -49,22 +51,22 @@ class ActuatorRepository {
             throw new IllegalStateException("Insert succeeded but no generated key returned");
         }
         UUID key = (UUID) keys.get("ID");
-        return new Actuator(key, actuatorName, baseUrl);
+        dto.setId(new ActuatorId(key));
+        return dto;
     }
 
-    void deleteById(UUID id) {
+    void deleteById(ActuatorId id) {
         String sql = "DELETE FROM actuator WHERE id = ?";
-        jdbcTemplate.update(sql, id.toString());
+        jdbcTemplate.update(sql, id.id().toString());
     }
 
-    Actuator findById(UUID id) {
+    Optional<Actuator> findById(ActuatorId id) {
         String sql = """
                 SELECT id, actuator_name, base_url
                 FROM actuator
                 WHERE id = ?
                 """;
-
-        return jdbcTemplate.queryForObject(sql, rowMapper, id.toString());
+        return jdbcTemplate.query(sql, rowMapper, id.id().toString()).stream().findFirst();
     }
 
     List<Actuator> findAll() {
@@ -74,4 +76,11 @@ class ActuatorRepository {
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }
+
+    private static final RowMapper<Actuator> rowMapper = (rs, rowNum) ->
+            new Actuator(
+                    new ActuatorId(UUID.fromString(rs.getString("id"))),
+                    rs.getString("actuator_name"),
+                    rs.getString("base_url")
+            );
 }

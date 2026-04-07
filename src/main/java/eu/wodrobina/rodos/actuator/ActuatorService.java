@@ -6,8 +6,6 @@ import eu.wodrobina.rodos.actuator.api.RegisterActuatorRequest;
 import eu.wodrobina.rodos.actuator.api.RegisterActuatorScheduleRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class ActuatorService {
 
@@ -21,11 +19,11 @@ public class ActuatorService {
     }
 
     public ActuatorResource registerActuator(RegisterActuatorRequest request) {
-        return actuatorRepository.save(request.actuatorName(), request.baseUrl())
+        return actuatorRepository.save(new Actuator(request.actuatorName(), request.baseUrl()))
                 .asResource();
     }
 
-    public void deleteActuator(UUID actuatorId) {
+    public void deleteActuator(ActuatorId actuatorId) {
         actuatorRepository.deleteById(actuatorId);
     }
 

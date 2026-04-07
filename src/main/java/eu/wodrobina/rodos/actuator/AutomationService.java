@@ -9,7 +9,6 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -20,7 +19,7 @@ class AutomationService {
     private final ScheduleRepository repository;
     private final ActuatorTimerService actuatorTimerService;
     private final SensorEvaluationService sensorEvaluationService;
-    private final Map<UUID, Actuator> registeredActuators = new ConcurrentHashMap<>();
+    private final Map<ActuatorId, Actuator> registeredActuators = new ConcurrentHashMap<>();
 
     public AutomationService(ScheduleRepository repository,
                              ActuatorTimerService actuatorTimerService, SensorEvaluationService sensorEvaluationService) {
@@ -30,7 +29,7 @@ class AutomationService {
     }
 
     public void registerActuator(Actuator actuator) {
-        registeredActuators.put(actuator.getId(), actuator);
+        registeredActuators.put(actuator.getActuatorId(), actuator);
     }
 
     @Scheduled(cron = "0 * * * * *")
@@ -46,7 +45,7 @@ class AutomationService {
                 continue;
             }
 
-            UUID actuatorId = schedule.getActuatorId().id();
+            ActuatorId actuatorId = schedule.getActuatorId();
             Actuator actuator = registeredActuators.get(actuatorId);
 
             if (actuator != null) {

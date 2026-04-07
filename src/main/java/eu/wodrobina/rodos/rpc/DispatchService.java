@@ -1,6 +1,7 @@
 package eu.wodrobina.rodos.rpc;
 
 import eu.wodrobina.rodos.actuator.ActuatorConditionService;
+import eu.wodrobina.rodos.actuator.ActuatorId;
 import eu.wodrobina.rodos.actuator.ActuatorService;
 import eu.wodrobina.rodos.actuator.api.AddActuatorConditionRequest;
 import eu.wodrobina.rodos.actuator.api.RegisterActuatorRequest;
@@ -56,7 +57,7 @@ class DispatchService {
 
             case "actuator.delete" ->
             {
-                actuatorService.deleteActuator(requireUuid(params, "actuatorId"));
+                actuatorService.deleteActuator(new ActuatorId(requireUuid(params, "actuatorId")));
                 yield Map.of("status", "OK");
             }
 

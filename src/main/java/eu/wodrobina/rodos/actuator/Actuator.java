@@ -3,11 +3,10 @@ package eu.wodrobina.rodos.actuator;
 import eu.wodrobina.rodos.actuator.api.ActuatorResource;
 
 import java.util.Objects;
-import java.util.UUID;
 
 class Actuator {
 
-    private UUID id;
+    private ActuatorId id;
     private String actuatorName;
     private String baseUrl;
 
@@ -19,21 +18,17 @@ class Actuator {
         this.baseUrl = baseUrl;
     }
 
-    public Actuator(UUID id, String actuatorName, String baseUrl) {
+    public Actuator(ActuatorId id, String actuatorName, String baseUrl) {
         this.id = id;
         this.actuatorName = actuatorName;
         this.baseUrl = baseUrl;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
     public ActuatorId getActuatorId() {
-        return new ActuatorId(this.id);
+        return this.id;
     }
 
-    public void setId(UUID id) {
+    public void setId(ActuatorId id) {
         this.id = id;
     }
 

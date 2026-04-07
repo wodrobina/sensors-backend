@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Repository
-public class ScheduleRepository {
+class ScheduleRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
