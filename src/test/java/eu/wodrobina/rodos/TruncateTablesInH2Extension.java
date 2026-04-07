@@ -1,4 +1,4 @@
-package eu.wodrobina.rodos.sensorreading;
+package eu.wodrobina.rodos;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.ExtensionContext;

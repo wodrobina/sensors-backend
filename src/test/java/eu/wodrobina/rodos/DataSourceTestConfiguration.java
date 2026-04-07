@@ -1,4 +1,4 @@
-package eu.wodrobina.rodos.sensorreading;
+package eu.wodrobina.rodos;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

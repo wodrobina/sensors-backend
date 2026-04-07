@@ -1,5 +1,6 @@
 package eu.wodrobina.rodos.sensorreading;
 
+import eu.wodrobina.rodos.TruncateTablesExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;

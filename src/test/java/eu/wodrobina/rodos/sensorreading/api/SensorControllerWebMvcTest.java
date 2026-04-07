@@ -2,8 +2,8 @@ package eu.wodrobina.rodos.sensorreading.api;
 
 
 import eu.wodrobina.rodos.sensor.SensorService;
-import eu.wodrobina.rodos.sensorreading.TestUtils;
-import eu.wodrobina.rodos.sensorreading.TruncateTablesExtension;
+import eu.wodrobina.rodos.TestUtils;
+import eu.wodrobina.rodos.TruncateTablesExtension;
 import org.hamcrest.Matcher;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;

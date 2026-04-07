@@ -1,4 +1,4 @@
-package eu.wodrobina.rodos.sensorreading;
+package eu.wodrobina.rodos;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
