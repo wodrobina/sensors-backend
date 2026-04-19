@@ -16,14 +16,14 @@ CREATE TABLE IF NOT EXISTS sensor (
     public_key TEXT NOT NULL
 );
 
-CREATE TABLE actuator
+CREATE TABLE IF NOT EXISTS actuator
 (
     id            uuid DEFAULT RANDOM_UUID() PRIMARY KEY,
     actuator_name VARCHAR(100) NOT NULL,
     base_url      VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE actuator_schedules
+CREATE TABLE IF NOT EXISTS actuator_schedules
 (
     id               uuid DEFAULT RANDOM_UUID() PRIMARY KEY,
     actuator_id      uuid NOT NULL,

@@ -36,6 +36,7 @@ RoDos follows a **layered architecture** pattern with clear separation of concer
 
 ## Class Dependencies
 
+
 ### Core Architecture Diagram
 
 ```mermaid
@@ -48,39 +49,61 @@ classDiagram
     }
     class SensorService {
         +registerSensor()
-    }
-    class SensorReadingService {
-        +recordReading()
-        +getReadings()
+        +findById()
     }
     class SensorRepository {
-        <<interface>>
+        +getReadings()
         +save()
         +findById()
-        +existsByMacAddress()
     }
-    class SensorRepositoryImpl {
+    class SensorReadingService {
+        +findAllByReadingForSensor()
+        +findLatestBySensorId()
         +save()
-        +findById()
-        +existsByMacAddress()
     }
     class SensorReadingRepository {
-        <<interface>>
         +save()
+        +insert()
         +findBySensorId()
+        +findLatestBySensorId()
     }
-    class SensorReadingRepositoryImpl {
+    class ActuatorConditionService {
+        +addCondition()
+        +deleteCondition()
+    }
+    class ActuatorService {
+        +registerActuator()
+        +deleteActuator()
+        +addSchedule()
+    }
+    class ActuatorConditionRepository {
+        +findEnabledByScheduleId()
         +save()
-        +findBySensorId()
+        +deleteById()
     }
+    class ActuatorRepository {
+        +findById()
+        +findAll()
+        +deleteById()
+        +save()
+    }
+    class ScheduleRepository {
+        +findSchedulesForTime()
+        +saveSchedule()
+        +deleteSchedule()
+        +deleteByActuatorId()
+    }   
     
     RpcEndpointController --> DispatchService : uses
     DispatchService --> SensorService : forwards sensor requests
     DispatchService --> SensorReadingService : forwards reading requests
+    DispatchService --> ActuatorService : forwards reading requests
+    DispatchService --> ActuatorConditionService : forwards reading requests
     SensorService --> SensorRepository : uses
     SensorReadingService --> SensorReadingRepository : uses
-    SensorRepository <|-- SensorRepositoryImpl : implements
-    SensorReadingRepository <|-- SensorReadingRepositoryImpl : implements
+    ActuatorConditionService --> ActuatorConditionRepository : uses
+    ActuatorService --> ActuatorRepository : uses
+    ActuatorService --> ScheduleRepository : uses
 ```
 
 ### Domain Model

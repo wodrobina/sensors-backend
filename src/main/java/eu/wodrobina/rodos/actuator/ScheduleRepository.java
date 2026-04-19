@@ -78,6 +78,18 @@ class ScheduleRepository {
         );
     }
 
+    public List<ActuatorSchedule> findSchedulesActiveAt(LocalTime now) {
+        String sql = """
+                SELECT id, actuator_id, activation_time, duration_seconds, enabled
+                FROM actuator_schedules
+                WHERE enabled = true
+                  AND activation_time <= ?
+                  AND (activation_time + (duration_seconds * interval '1 second')) > ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, Time.valueOf(now), Time.valueOf(now));
+    }
+
     public void deleteSchedule(Long scheduleId) {
         String sql = "DELETE FROM actuator_schedules WHERE id = ?";
         jdbcTemplate.update(sql, scheduleId);
