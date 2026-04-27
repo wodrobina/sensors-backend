@@ -49,11 +49,11 @@ class Actuator {
     }
 
     public String buildOnUrl() {
-        return baseUrl + "/on";
+        return baseUrl + "/" + id.id().toString() + "/on";
     }
 
     public String buildOffUrl() {
-        return baseUrl + "/off";
+        return baseUrl + "/" + id.id().toString() + "/off";
     }
 
     private String normalizeBaseUrl(String url) {

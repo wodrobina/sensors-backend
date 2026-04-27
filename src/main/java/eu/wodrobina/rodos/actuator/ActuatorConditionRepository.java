@@ -42,7 +42,7 @@ public class ActuatorConditionRepository {
                 ORDER BY id
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper, scheduleId.id().toString());
+        return jdbcTemplate.query(sql, rowMapper, scheduleId.id());
     }
 
     public ActuatorCondition save(ActuatorCondition condition) {

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/usagetags/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Aktuatorów - RoDos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .actuator-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .url-text {
+            font-family: monospace;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .action-buttons {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Zarządzanie Aktuatorami</h2>
+                </div>
+
+                <div class="card-body">
+                    <p class="text-muted">
+                        Poniżej znajduje się lista wszystkich zarejestrowanych aktuatorów w systemie RoDos.
+                    </p>
+
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nazwa</th>
+                            <th>Base URL</th>
+                            <th class="text-end">Akcje</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="actuator : ${actuators}">
+                            <td th:text="${actuator.id.id}">
+                                550e8400-e29b-41d4-a716-446655440001
+                            </td>
+
+                            <td class="actuator-name" th:text="${actuator.actuatorName}">
+                                Nazwa
+                            </td>
+
+                            <td class="url-text" th:text="${actuator.baseUrl}">
+                                192.168.87.184/zone
+                            </td>
+
+                            <td class="text-end action-buttons">
+                                <button
+                                        type="button"
+                                        class="btn btn-sm btn-success"
+                                        th:attr="onclick=|callActuatorApi('${actuator.baseUrl}', '${actuator.id.id}', 'on')|">
+                                    ON
+                                </button>
+
+                                <button
+                                        type="button"
+                                        class="btn btn-sm btn-danger"
+                                        th:attr="onclick=|callActuatorApi('${actuator.baseUrl}', '${actuator.id.id}', 'off')|">
+                                    OFF
+                                </button>
+
+                                <a
+                                        th:href="${actuator.baseUrl}"
+                                        class="btn btn-sm btn-outline-info"
+                                        target="_blank">
+                                    Odwiedź API
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(actuators)}">
+                            <td colspan="4" class="text-center text-danger py-4">
+                                Brak aktywnych aktuatorów w systemie.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div id="apiMessage" class="alert d-none mt-3" role="alert"></div>
+                </div>
+
+                <div class="card-footer text-muted text-center">
+                    System RoDos &copy; 2024
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function callActuatorApi(baseUrl, actuatorId, action) {
+        const messageBox = document.getElementById('apiMessage');
+
+        let normalizedBaseUrl = baseUrl.trim();
+
+        if (
+            !normalizedBaseUrl.startsWith('http://') &&
+            !normalizedBaseUrl.startsWith('https://')
+        ) {
+            normalizedBaseUrl = 'http://' + normalizedBaseUrl;
+        }
+
+        if (normalizedBaseUrl.endsWith('/')) {
+            normalizedBaseUrl = normalizedBaseUrl.slice(0, -1);
+        }
+
+        const url = `${normalizedBaseUrl}/${actuatorId}/${action}`;
+
+        console.log('URL:', url);
+
+        try {
+            const response = await fetch(url, {
+                method: 'GET'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            showMessage(
+                messageBox,
+                `Aktuator ${actuatorId} został przełączony na ${action}.`,
+                'success'
+            );
+        } catch (error) {
+            showMessage(
+                messageBox,
+                `Nie udało się wywołać API aktuatora ${actuatorId}: ${error.message}`,
+                'danger'
+            );
+        }
+    }
+
+    function showMessage(element, message, type) {
+        element.className = `alert alert-${type} mt-3`;
+        element.textContent = message;
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

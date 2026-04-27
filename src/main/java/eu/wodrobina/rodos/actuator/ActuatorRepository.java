@@ -66,7 +66,7 @@ class ActuatorRepository {
                 FROM actuator
                 WHERE id = ?
                 """;
-        return jdbcTemplate.query(sql, rowMapper, id.id().toString()).stream().findFirst();
+        return jdbcTemplate.query(sql, rowMapper, id.id()).stream().findFirst();
     }
 
     List<Actuator> findAll() {

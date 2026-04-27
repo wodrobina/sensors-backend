@@ -14,6 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+record ActuatorScheduleWithDetails(
+        String actuatorName,
+        LocalTime startTime,
+        LocalTime endTime
+) {
+}
+
 @Repository
 class ScheduleRepository {
 
@@ -79,15 +86,19 @@ class ScheduleRepository {
     }
 
     public List<ActuatorSchedule> findSchedulesActiveAt(LocalTime now) {
+
         String sql = """
-                SELECT id, actuator_id, activation_time, duration_seconds, enabled
-                FROM actuator_schedules
-                WHERE enabled = true
-                  AND activation_time <= ?
-                  AND (activation_time + (duration_seconds * interval '1 second')) > ?
+                
+                SELECT id, actuator_id, activation_time, duration_seconds, enabled 
+                FROM actuator_schedules 
+                WHERE enabled = true       
+                  AND activation_time <= ?::time       
+                  AND (activation_time + (duration_seconds * interval '1 second')) > ?::time 
+                ORDER BY activation_time 
                 """;
 
         return jdbcTemplate.query(sql, rowMapper, Time.valueOf(now), Time.valueOf(now));
+
     }
 
     public void deleteSchedule(Long scheduleId) {
@@ -95,8 +106,26 @@ class ScheduleRepository {
         jdbcTemplate.update(sql, scheduleId);
     }
 
-    public void deleteByActuatorId(UUID actuatorId) {
+    public void deleteByActuatorId(UUID actuator, UUID actuatorId) {
         String sql = "DELETE FROM actuator_schedules WHERE actuator_id = ?";
         jdbcTemplate.update(sql, actuatorId.toString());
+    }
+
+    public List<ActuatorScheduleWithDetails> findAllSchedulesWithDetails() {
+        String sql = """
+                SELECT a.actuator_name, s.activation_time, 
+                       (s.activation_time + (s.duration_seconds * interval '1 second'))::time AS end_time
+                FROM actuator_schedules s
+                JOIN actuator a ON s.actuator_id = a.id
+                WHERE s.enabled = true
+                ORDER BY activation_time ASC
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) ->
+                new ActuatorScheduleWithDetails(
+                        rs.getString("actuator_name"),
+                        rs.getTime("activation_time").toLocalTime(),
+                        rs.getTime("end_time").toLocalTime()
+                ));
     }
 }
