@@ -28,8 +28,10 @@ CREATE TABLE IF NOT EXISTS actuator_schedules
     id               uuid DEFAULT RANDOM_UUID() PRIMARY KEY,
     actuator_id      uuid NOT NULL,
     activation_time  TIME NOT NULL,
+    days_of_week     VARCHAR(100) NOT NULL DEFAULT 'MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY',
+    months           VARCHAR(120) NOT NULL DEFAULT 'JANUARY,FEBRUARY,MARCH,APRIL,MAY,JUNE,JULY,AUGUST,SEPTEMBER,OCTOBER,NOVEMBER,DECEMBER',
     duration_seconds INT NOT NULL,
     enabled          BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_actuator_schedule_actuator
-        FOREIGN KEY (actuator_id) REFERENCES actuator(id) ON DELETE CASCADE
-);
+    FOREIGN KEY (actuator_id) REFERENCES actuator(id) ON DELETE CASCADE
+    );

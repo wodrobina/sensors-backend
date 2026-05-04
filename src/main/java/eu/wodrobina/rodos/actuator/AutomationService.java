@@ -6,8 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -42,18 +41,16 @@ class AutomationService {
     @Scheduled(cron = "*/10 * * * * *")
         // Every 10 seconds
     void checkSchedules() {
-        LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime now = LocalDateTime.now();
 
         logger.info("[Automation] Checking active windows for time: {}", now);
 
-        List<ActuatorSchedule> activeSchedules =
-                scheduleRepository.findSchedulesActiveAt(now);
+        List<ActuatorSchedule> activeSchedules = scheduleRepository.findSchedulesActiveAt(now);
 
         logger.info("[Automation] Found {} active schedules", activeSchedules.size());
 
         for (ActuatorSchedule schedule : activeSchedules) {
-            String executionKey = buildExecutionKey(schedule, today);
+            String executionKey = buildExecutionKey(schedule, now.toLocalDate());
 
             if (processedExecutions.contains(executionKey)) {
                 logger.debug("[Automation] Schedule {} already processed for current window",
@@ -94,7 +91,7 @@ class AutomationService {
             processedExecutions.add(executionKey);
         }
 
-        cleanUpProcessedExecutions(today);
+        cleanUpProcessedExecutions(now.toLocalDate());
     }
 
     private String buildExecutionKey(ActuatorSchedule schedule, LocalDate date) {

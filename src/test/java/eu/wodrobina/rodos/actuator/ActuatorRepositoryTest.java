@@ -58,17 +58,6 @@ class ActuatorRepositoryTest {
                 .isEmpty();
     }
 
-//    @Test
-//    void should_find_sensor_readings_by_sensor_name() {
-//        givenExistingSensorReading(25);
-//
-//        givenExistingSensorReading(anotherSensorId, 20);
-//        givenExistingSensorReading(anotherSensorId, 21);
-//
-//        assertThat(actuatorRepository.findAllBySensorId(anotherSensorId))
-//                .allMatch(sr -> sr.sensorId().equals(anotherSensorId));
-//    }
-
     private void givenTransientActuator() {
         actuator = new Actuator("Terrace Lamp", "localhost:8080");
     }

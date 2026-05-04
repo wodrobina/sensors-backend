@@ -9,10 +9,16 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Time;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 record ActuatorScheduleWithDetails(
         String actuatorName,
@@ -35,6 +41,8 @@ class ScheduleRepository {
                     new ScheduleId(UUID.fromString(rs.getString("id"))),
                     new ActuatorId(UUID.fromString(rs.getString("actuator_id"))),
                     rs.getTime("activation_time").toLocalTime(),
+                    parseDaysOfWeek(rs.getString("days_of_week")),
+                    parseMonths(rs.getString("months")),
                     rs.getInt("duration_seconds"),
                     rs.getBoolean("enabled")
             );
@@ -52,12 +60,29 @@ class ScheduleRepository {
 
     public ActuatorSchedule saveSchedule(ActuatorId actuatorId,
                                          LocalTime activationTime,
+                                         Set<DayOfWeek> dayOfWeeks,
+                                         Set<Month> months,
                                          int durationSeconds,
                                          boolean enabled) {
         String sql = """
-                INSERT INTO actuator_schedules (actuator_id, activation_time, duration_seconds, enabled)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO actuator_schedules (
+                    actuator_id,
+                    activation_time,
+                    days_of_week,
+                    months,
+                    duration_seconds,
+                    enabled
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
                 """;
+
+        Set<DayOfWeek> resolvedDaysOfWeek = dayOfWeeks == null || dayOfWeeks.isEmpty()
+                ? Set.of(DayOfWeek.values())
+                : dayOfWeeks;
+
+        Set<Month> resolvedMonths = months == null || months.isEmpty()
+                ? Set.of(Month.values())
+                : months;
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -65,40 +90,75 @@ class ScheduleRepository {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setObject(1, actuatorId.id());
             ps.setTime(2, Time.valueOf(activationTime));
-            ps.setInt(3, durationSeconds);
-            ps.setBoolean(4, enabled);
+            ps.setString(3, serializeDaysOfWeek(resolvedDaysOfWeek));
+            ps.setString(4, serializeMonths(resolvedMonths));
+            ps.setInt(5, durationSeconds);
+            ps.setBoolean(6, enabled);
             return ps;
         }, keyHolder);
 
         Map<String, Object> keys = keyHolder.getKeys();
-        if (!keys.containsKey("ID")) {
+        if (keys == null || !keys.containsKey("ID")) {
             throw new IllegalStateException("Insert succeeded but no generated key returned");
         }
+
         UUID key = (UUID) keys.get("ID");
 
         return new ActuatorSchedule(
                 new ScheduleId(key),
                 actuatorId,
                 activationTime,
+                resolvedDaysOfWeek,
+                resolvedMonths,
                 durationSeconds,
                 enabled
         );
     }
 
-    public List<ActuatorSchedule> findSchedulesActiveAt(LocalTime now) {
+    private String serializeDaysOfWeek(Set<DayOfWeek> daysOfWeek) {
+        return daysOfWeek.stream()
+                .sorted()
+                .map(DayOfWeek::name)
+                .collect(Collectors.joining(","));
+    }
+
+    private String serializeMonths(Set<Month> months) {
+        return months.stream()
+                .sorted()
+                .map(Month::name)
+                .collect(Collectors.joining(","));
+    }
+
+    public List<ActuatorSchedule> findSchedulesActiveAt(LocalDateTime now) {
+        LocalTime currentTime = now.toLocalTime();
+        DayOfWeek currentDayOfWeek = now.getDayOfWeek();
+        Month currentMonth = now.getMonth();
 
         String sql = """
-                
-                SELECT id, actuator_id, activation_time, duration_seconds, enabled 
-                FROM actuator_schedules 
-                WHERE enabled = true       
-                  AND activation_time <= ?::time       
-                  AND (activation_time + (duration_seconds * interval '1 second')) > ?::time 
-                ORDER BY activation_time 
-                """;
+            SELECT id,
+                   actuator_id,
+                   activation_time,
+                   days_of_week,
+                   months,
+                   duration_seconds,
+                   enabled
+            FROM actuator_schedules
+            WHERE enabled = true
+              AND activation_time <= ?
+              AND (activation_time + (duration_seconds * interval '1 second')) > ?
+              AND CONCAT(',', days_of_week, ',') LIKE ?
+              AND CONCAT(',', months, ',') LIKE ?
+            ORDER BY activation_time
+            """;
 
-        return jdbcTemplate.query(sql, rowMapper, Time.valueOf(now), Time.valueOf(now));
-
+        return jdbcTemplate.query(
+                sql,
+                rowMapper,
+                Time.valueOf(currentTime),
+                Time.valueOf(currentTime),
+                "%," + currentDayOfWeek.name() + ",%",
+                "%," + currentMonth.name() + ",%"
+        );
     }
 
     public void deleteSchedule(Long scheduleId) {
@@ -106,7 +166,7 @@ class ScheduleRepository {
         jdbcTemplate.update(sql, scheduleId);
     }
 
-    public void deleteByActuatorId(UUID actuator, UUID actuatorId) {
+    public void deleteByActuatorId(UUID actuatorId) {
         String sql = "DELETE FROM actuator_schedules WHERE actuator_id = ?";
         jdbcTemplate.update(sql, actuatorId.toString());
     }
@@ -127,5 +187,29 @@ class ScheduleRepository {
                         rs.getTime("activation_time").toLocalTime(),
                         rs.getTime("end_time").toLocalTime()
                 ));
+    }
+
+    private Set<DayOfWeek> parseDaysOfWeek(String value) {
+        if (value == null || value.isBlank()) {
+            return Set.of(DayOfWeek.values());
+        }
+
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(day -> !day.isBlank())
+                .map(day -> DayOfWeek.valueOf(day.toUpperCase()))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Month> parseMonths(String value) {
+        if (value == null || value.isBlank()) {
+            return Set.of(Month.values());
+        }
+
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(month -> !month.isBlank())
+                .map(day -> Month.valueOf(day.toUpperCase()))
+                .collect(Collectors.toSet());
     }
 }

@@ -2,31 +2,40 @@ package eu.wodrobina.rodos.actuator;
 
 import eu.wodrobina.rodos.actuator.api.ActuatorScheduleResource;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.Objects;
+import java.util.Set;
 
 class ActuatorSchedule {
 
     private ScheduleId scheduleId;
     private ActuatorId actuatorId;
     private LocalTime activationTime;
+    private Set<DayOfWeek> daysOfWeek;
+    private Set<Month> months;
     private int durationSeconds;
     private boolean enabled;
 
     public ActuatorSchedule() {
     }
 
-    public ActuatorSchedule(ScheduleId scheduleId, ActuatorId actuatorId, LocalTime activationTime, int durationSeconds, boolean enabled) {
+    public ActuatorSchedule(ScheduleId scheduleId, ActuatorId actuatorId, LocalTime activationTime, Set<DayOfWeek> daysOfWeek, Set<Month> months, int durationSeconds, boolean enabled) {
         this.scheduleId = scheduleId;
         this.actuatorId = actuatorId;
         this.activationTime = activationTime;
+        this.daysOfWeek = daysOfWeek;
+        this.months = months;
         this.durationSeconds = durationSeconds;
         this.enabled = enabled;
     }
 
-    public ActuatorSchedule(ActuatorId actuatorName, LocalTime activationTime, int durationSeconds, boolean enabled) {
+    public ActuatorSchedule(ActuatorId actuatorName, LocalTime activationTime, Set<DayOfWeek> daysOfWeek, Set<Month> months, int durationSeconds, boolean enabled) {
         this.actuatorId = actuatorName;
         this.activationTime = activationTime;
+        this.daysOfWeek = daysOfWeek;
+        this.months = months;
         this.durationSeconds = durationSeconds;
         this.enabled = enabled;
     }
@@ -69,6 +78,14 @@ class ActuatorSchedule {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Set<DayOfWeek> getDaysOfWeek() {
+        return Set.copyOf(daysOfWeek);
+    }
+
+    public Set<Month> getMonths() {
+        return Set.copyOf(months);
     }
 
     public ActuatorScheduleResource asResource() {

@@ -4,7 +4,6 @@ import eu.wodrobina.rodos.actuator.api.ActuatorResource;
 import eu.wodrobina.rodos.actuator.api.ActuatorScheduleResource;
 import eu.wodrobina.rodos.actuator.api.RegisterActuatorRequest;
 import eu.wodrobina.rodos.actuator.api.RegisterActuatorScheduleRequest;
-import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,6 +40,8 @@ public class ActuatorService {
     public ActuatorScheduleResource addSchedule(RegisterActuatorScheduleRequest request) {
         return scheduleRepository.saveSchedule(new ActuatorId(request.actuatorId()),
                         request.activationTime(),
+                        request.daysOfWeek(),
+                        request.months(),
                         request.durationSeconds(),
                         request.enabled())
                 .asResource();
