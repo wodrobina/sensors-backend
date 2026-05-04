@@ -1,5 +1,5 @@
 # ---------- build stage ----------
-FROM gradle:9.3.0-jdk21-ubi10 AS build
+FROM gradle:9.3.0-jdk21 AS build
 WORKDIR /app
 
 COPY build.gradle settings.gradle gradle/ ./
