@@ -1,7 +1,7 @@
 package eu.wodrobina.rodos.sensorreading;
 
 public enum SensorUnit {
-    CELSIUS("°C");
+    CELSIUS("°C"), PERCENT("%");
 
     private final String symbol;
 
