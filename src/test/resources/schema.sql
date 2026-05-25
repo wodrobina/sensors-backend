@@ -35,3 +35,12 @@ CREATE TABLE IF NOT EXISTS actuator_schedules
     CONSTRAINT fk_actuator_schedule_actuator
     FOREIGN KEY (actuator_id) REFERENCES actuator(id) ON DELETE CASCADE
     );
+
+CREATE TABLE IF NOT EXISTS failed_http_calls
+(
+    id              uuid DEFAULT RANDOM_UUID() PRIMARY KEY,
+    url             TEXT      NOT NULL UNIQUE,
+    created_at      TIMESTAMP NOT NULL,
+    last_attempt_at TIMESTAMP NULL,
+    attempts        INT       NOT NULL DEFAULT 0
+);
