@@ -1,6 +1,5 @@
 package eu.wodrobina.rodos.actuator;
 
-import eu.wodrobina.rodos.actuator.api.ActuatorResource;
 import eu.wodrobina.rodos.retry.FailedHttpCallService;
 import eu.wodrobina.rodos.retry.api.HttpGetResult;
 import org.slf4j.Logger;
